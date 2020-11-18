@@ -8,18 +8,21 @@ namespace TestsGeneratorLib
 {
     class FileIO
     {
-        public async Task<string> ReadFileAsync(string sourceFile)
+        public async Task<string> ReadFileAsync(string source)
         {
-            using (StreamReader reader = new StreamReader(sourceFile))
+            using (StreamReader reader = new StreamReader(source))
             {
                 return await reader.ReadToEndAsync();
             }
         }
-        public async Task WriteFileAsync(string destinationFile, string text)
+        public async Task WriteFileAsync(string destination, Dictionary<string, string> files)
         {
-            using (StreamWriter writer = new StreamWriter(destinationFile, false))
+            foreach (var text in files)
             {
-                await writer.WriteAsync(text);
+                using (StreamWriter writer = new StreamWriter(destination + @$"\{text.Key}.cs", false))
+                {
+                    await writer.WriteAsync(text.Value);
+                }
             }
         }
     }
