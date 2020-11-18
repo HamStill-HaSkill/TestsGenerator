@@ -13,7 +13,6 @@ namespace TestsGenerator
             string dest = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, "TestGeneratorClassTest");
             string source = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName, "TestClasses");
             test.Generate(source, dest, 5).Wait();
-
         }
     }
 }
