@@ -23,13 +23,15 @@ namespace Class1
             a.Add(5);
         }
     }
-    class Foo
-    {
-        public void Run(int a)
+        class Foo
         {
 
+            public void Run(int a)
+            {
+
+            }
         }
-    }
+
 
 
 }

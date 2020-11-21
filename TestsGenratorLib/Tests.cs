@@ -15,7 +15,7 @@ namespace TestsGeneratorLib
             fileIO = new FileIO();
             generator = new TestGenerator();
         }
-        public Task Generate(string source, string destination, int maxParallelism)
+        public Task Generate(List<string> source, string destination, int maxParallelism)
         {
             var executionOptions = new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = maxParallelism };
             var linkOptions = new DataflowLinkOptions { PropagateCompletion = true };
@@ -24,32 +24,23 @@ namespace TestsGeneratorLib
                 await fileIO.ReadFileAsync(path),
                 executionOptions);
 
-            var generateTest = new TransformBlock<string, Dictionary<string, string>>(async text =>
-                await Task.Run(() => generator.CreateTest(text)),
-                executionOptions);
+            var generateTest = new TransformBlock<string, List<TestFile>>(text =>
+            {
+                return generator.CreateTest(text);
+            }, executionOptions);
 
-            var saveTestFile = new ActionBlock<Dictionary<string, string>>(async text =>
+            var saveTestFile = new ActionBlock<List<TestFile>>(async text =>
             {
                 await fileIO.WriteFileAsync(destination, text);
             }, executionOptions);
 
             openFile.LinkTo(generateTest, linkOptions);
             generateTest.LinkTo(saveTestFile, linkOptions);
-            try
-            {
-                foreach (var file in Directory.GetFiles(source))
-                {
-                    if (file.EndsWith(".cs"))
-                    {
-                        openFile.Post(file);
-                    }
-                }
-            }
-            catch
-            {
-                throw;
-            }
 
+            foreach (var file in source)
+            {
+                openFile.Post(file);
+            }
 
             openFile.Complete();
             return saveTestFile.Completion;

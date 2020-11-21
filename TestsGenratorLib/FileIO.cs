@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,13 +16,13 @@ namespace TestsGeneratorLib
                 return await reader.ReadToEndAsync();
             }
         }
-        public async Task WriteFileAsync(string destination, Dictionary<string, string> files)
+        public async Task  WriteFileAsync(string destination, List<TestFile> files)
         {
             foreach (var text in files)
             {
-                using (StreamWriter writer = new StreamWriter(destination + @$"\{text.Key}.cs", false))
+                using (StreamWriter writer = new StreamWriter(destination + @$"\{text.FileName}.cs", false))
                 {
-                    await writer.WriteAsync(text.Value);
+                    await writer.WriteAsync(text.TestCode);
                 }
             }
         }
